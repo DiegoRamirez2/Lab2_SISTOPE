@@ -90,13 +90,16 @@ void calcularDatosAnio(Hijo *H){
     FILE *fp = fopen(H->entrada, "r");
     char linea[256];
     int i = 0;
+    int j = 0;
     float precio_acum = 0;
     float precio_J;
     fseek(fp, H->inicio, SEEK_SET);
-
     while(fgets(linea, 256, fp)){
         precio_J = precioJuego(linea, strlen(linea));
-        precio_acum = precio_acum + precio_J;
+        if(precio_J != 0.0){
+            precio_acum += precio_J;
+            j++;
+        }
         if(Linux(linea, strlen(linea))){
             H->nLinuxs++;
         }
@@ -116,10 +119,16 @@ void calcularDatosAnio(Hijo *H){
         i++;
         memset(linea, 0, 256);
         if(ftell(fp) == H->final){
+            // Esto funciona bien
             break;
         }
     }
-    H->average = precio_acum / i;
+    if(j == 0){
+        H->average = precio_acum;
+    }
+    else{
+        H->average = precio_acum / j;
+    }
     H->nWindows = (H->nWindows / i) * 100;
     H->nMacOs = (H->nMacOs / i) * 100;
     H->nLinuxs = (H->nLinuxs / i) * 100;
@@ -197,15 +206,20 @@ void imprimirFree(Hijo *H){
     FILE *entrada = fopen(H->entrada, "r");
     FILE *fp = fopen(H->salida, "a");
     fseek(entrada, H->inicio, SEEK_SET);
+    int i = 0;
     char linea[256];
     while(fgets(linea, 256, entrada)){
         if(isFree(linea, strlen(linea))){
             fputs(nombreJuego(linea, strlen(linea)), fp); fputs("\n", fp);
+            i++;
         }
         memset(linea, 0, 256);
         if(ftell(entrada) == H->final){
             break;
         }
+    }
+    if(i == 0){
+        fputs("No hay juegos gratis\n", fp);
     }
     fclose(entrada);
     fclose(fp);
@@ -218,10 +232,20 @@ void imprimirFree(Hijo *H){
 void imprimirDatos(Hijo *H){
     FILE *fp = fopen(H->salida, "a");
     char expensive[6], cheap[6], average[4], windows[4], macos[4], linuxs[4];
-    fputs("Juego mas caro: ", fp); fputs(H->nameExpensive, fp); fputs(" ", fp);
-    fputs(gcvt(H->priceExpensive, 6, expensive), fp); fputs("\n", fp);
-    fputs("Juego mas barato: ", fp); fputs(H->nameCheap, fp); fputs(" ", fp);
-    fputs(gcvt(H->priceCheap, 6, cheap), fp); fputs("\n", fp);
+    fputs("Juego mas caro: ", fp);
+    if(H->priceExpensive == 0.0){
+        fputs("No hay juegos con precio mayor al mínimo ingresado, solo gratis\n", fp);
+    }else{
+        fputs(H->nameExpensive, fp); fputs(" ", fp); 
+        fputs(gcvt(H->priceExpensive, 6, expensive), fp); fputs("\n", fp);
+    }
+    fputs("Juego mas barato: ", fp);
+    if(H->priceCheap == 1000){
+        fputs("No hay juegos con precio mayor al mínimo ingresado, solo gratis\n", fp);
+    }else{
+        fputs(H->nameCheap, fp); fputs(" ", fp);
+        fputs(gcvt(H->priceCheap, 6, cheap), fp); fputs("\n", fp);
+    }
     fputs("Promedio de precios: ", fp); fputs(gcvt(H->average, 4, average), fp); fputs("\n", fp);
     fputs("Windows: ", fp); fputs(gcvt(H->nWindows, 4, windows), fp); fputs("% ", fp);
     fputs("Mac: ", fp); fputs(gcvt(H->nMacOs, 4, macos), fp); fputs("% ", fp);
@@ -236,7 +260,7 @@ void imprimirDatos(Hijo *H){
     * Retorno: True si es gratis, False si no lo es
 */
 bool isFree(char linea[], int largo){
-    if(linea[posicion(linea, largo, 4)] == 'T'){
+    if(precioJuego(linea, largo) == 0.0){
         return true;
     }
     return false;

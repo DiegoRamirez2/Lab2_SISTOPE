@@ -41,6 +41,5 @@ int main(){
         printf("%s", buffer);
     }
     */
-    printf("Hola Mundo\n");
     return 0;
 }

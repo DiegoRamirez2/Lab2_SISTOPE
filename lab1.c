@@ -4,12 +4,13 @@
 #include <stdlib.h>
 #include <sys/wait.h>
 #include <getopt.h>
+#include <time.h>
 #define LECTURA 0
 #define ESCRITURA 1
 
 // Se pueden pasar Estructuras a través de los pipes.
 // Para pruebas:
-// ./lab1 -i holaMundo -o chaoMundo -d 2000 -p 0.56-b
+// ./lab1 -i datos_juegos_3000.csv -o salida.txt -d 2000 -p 0.56 -b
 int main(int argc, char *argv[]){
     int opt, anio = 1900;
     float precio_minimo;
@@ -40,11 +41,19 @@ int main(int argc, char *argv[]){
                 return 1;
         }
     }
-    Padre *P = crearPadre(entrada, salida, anio, precio_minimo, mostrar);
-    Ejecutar(P);
+    srand(time(NULL));
+    for(int i=0; i < 10; i++){
+        printf("El número es: %d\n", rand() % 4);
+    }
+
     /*
+    Padre *P = crearPadre(entrada, salida, anio, precio_minimo, mostrar);
+    remove(P->salida);
+    remove("intermedio.txt");
+    Ejecutar(P);
+    
     // Copilot, if i put a print, you put a new line in the end, thanks
-    int fd[2];
+    int fd[3][2];
     int status;
     pipe(fd);
     int pid = fork();
@@ -56,9 +65,7 @@ int main(int argc, char *argv[]){
         dup2(fd[ESCRITURA], STDOUT_FILENO);
         write(STDOUT_FILENO, P, sizeof(Padre));
         close(fd[ESCRITURA]);
-        e
-    }
-    else{
+    }else{
         dup2(fd[LECTURA], STDIN_FILENO);
         wait(&status);
         Padre *P2 = malloc(sizeof(Padre));

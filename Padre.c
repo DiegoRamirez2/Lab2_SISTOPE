@@ -33,7 +33,7 @@ int* obtenerAnios(Padre *P){
         float precio_juego = obtenerPrecio(linea, largo);
         if(buscarAnio(anio, anios) == -1 
             && anio >= P->anio 
-            && precio_juego >= P->precio_minimo){
+            && (precio_juego >= P->precio_minimo || precio_juego == 0.0)){
             anios[i] = anio;
             i++;
         }
@@ -46,6 +46,8 @@ int* obtenerAnios(Padre *P){
     qsort(anios_correctos, i, sizeof(int), ordenarAnios);
     fclose(fp);
     P->n_anios = i;
+    P->anio = anios_correctos[0];
+    //printf("El anio ahora es: %d\n", P->anio);
     return anios_correctos;
 }
 /*
@@ -94,7 +96,6 @@ float obtenerPrecio(char linea[], int largo){
     char precio_[i];
     for(int j=0; j < i; j++){
         precio_[j] = linea[pos + j];
-        printf("El elemento es %c\n", linea[pos + j]);
     }
     return atof(precio_);
 }
@@ -139,6 +140,7 @@ void escribirArchivo(char entrada[], int anio, float precio_min, FILE *archivo){
         int anio_ = obtenerAnio(linea, largo - 1);
         float precio_juego = obtenerPrecio(linea, largo);
         if(anio_ == anio && (precio_juego >= precio_min || precio_juego  == 0.0)){
+            //printf("Precio juego es: %f\n", precio_juego);
             fputs(linea, archivo);
         }
         memset(linea, 0, 256);
@@ -175,7 +177,7 @@ int *posicionesArchivo(Padre *P){
     while(fgets(linea, 256, fp)){
         int largo = strlen(linea);
         int anio = obtenerAnio(linea, largo);
-        if(anio != anio_){
+        if(anio != anio_ && (ftell(fp) - largo) != 0){
             posiciones[i] = ftell(fp) - largo;
             i++;
             anio_ = anio;
@@ -196,6 +198,7 @@ int *posicionesArchivo(Padre *P){
 */
 
 void Ejecutar(Padre *P){
+    int status;
     int *anios = obtenerAnios(P);
     archivoOrdenado(P, anios);
     int *posiciones = posicionesArchivo(P);
@@ -211,7 +214,7 @@ void Ejecutar(Padre *P){
             return;
         }
         else{
-            wait(NULL);
+            wait(&status);
         }
     }
     if(P->mostrar == 1){
