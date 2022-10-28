@@ -5,7 +5,7 @@
 #include <stdbool.h>
 #include <unistd.h>
 
-/* 
+/* Realizando pruebas aaaaa
     * Esta estructura representará al proceso hijo
     * Va a almacenar el archivo intermedio, y el de salida
     * también las posiciones desde leerá y hasta donde leerá
