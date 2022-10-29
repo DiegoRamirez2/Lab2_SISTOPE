@@ -41,11 +41,30 @@ int main(int argc, char *argv[]){
                 return 1;
         }
     }
+    int pipe[3][2];
     srand(time(NULL));
-    for(int i=0; i < 10; i++){
-        printf("El número es: %d\n", rand() % 4);
+    int pid;
+    printf("\n");
+    for(int i=0; i < 3; i++){
+        pid = fork();
+        if(pid > 0){
+            int numero = rand() % 3;
+            printf("El número es: %d\n", i);
+            dup2(pipe[i][ESCRITURA], STDOUT_FILENO);
+            close(pipe[i][LECTURA]);
+            write(STDOUT_FILENO, &i, sizeof(i));
+        }
+        else{
+            printf("En el hijo, el i es: %d\n", i);
+            int turno;
+            close(pipe[i][ESCRITURA]);
+            //dup2(pipe[i][LECTURA], STDOUT_FILENO);
+            read(pipe[i][LECTURA], &turno, sizeof(turno));
+            printf("Mi turno es: %d y mi Pid: %d\n", turno, getpid());
+            return 0;
+        }
     }
-
+    
     /*
     Padre *P = crearPadre(entrada, salida, anio, precio_minimo, mostrar);
     remove(P->salida);
@@ -53,7 +72,7 @@ int main(int argc, char *argv[]){
     Ejecutar(P);
     
     // Copilot, if i put a print, you put a new line in the end, thanks
-    int fd[3][2];
+    int fd[2];
     int status;
     pipe(fd);
     int pid = fork();

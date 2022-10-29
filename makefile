@@ -9,3 +9,6 @@ clean:
 
 main: main.c
 	gcc -o main main.c
+
+receptor: receptor.c
+	gcc -o receptor receptor.c
