@@ -41,6 +41,7 @@ int main(int argc, char *argv[]){
                 return 1;
         }
     }
+    /**/
     int pipe[3][2];
     srand(time(NULL));
     int pid;

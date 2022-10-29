@@ -8,7 +8,10 @@ clean:
 	rm -f lab1 *.o *.txt main
 
 main: main.c
-	gcc -o main main.c
+	gcc -o main main.c Padre.c Hijo.c
 
 receptor: receptor.c
 	gcc -o receptor receptor.c
+
+Exec: Exec.c
+	gcc -o Exec Exec.c

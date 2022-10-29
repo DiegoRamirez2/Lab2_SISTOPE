@@ -13,12 +13,12 @@
 // solo hacer uso de dup2 para repartir poco a poco
 
 int main(int argc, char *argv[]){
-    /*
-    int opt, anio = 1900;
+    printf("Estamos ejecutando el main\n");
+    int opt, anio = 1900, pid, n_workers;
     float precio_minimo;
     char entrada[100], salida[100];
     bool mostrar = false;
-    while((opt = getopt(argc, argv, ":i:o:d:p:b::")) != -1){
+    while((opt = getopt(argc, argv, ":i:o:d:p:n:b::")) != -1){
         switch (opt){
             case 'i':
                 strcpy(entrada, optarg);
@@ -35,6 +35,9 @@ int main(int argc, char *argv[]){
             case 'b':
                 mostrar = true;
                 break;
+            case 'n':
+                n_workers = atoi(optarg);
+                break;
             case '?':
                 printf("unknown option: %c", optopt);
                 return 1;
@@ -43,7 +46,15 @@ int main(int argc, char *argv[]){
                 return 1;
         }
     }
-    */
+    Padre *P = crearPadre(entrada, salida, anio, precio_minimo, mostrar);
+    printf("La entrada es: %s\n", entrada);
+    printf("La salida es: %s\n", salida);
+    printf("El año es: %d\n", anio);
+    printf("El precio mínimo es: %f\n", precio_minimo);
+    printf("El mostrar es: %d\n", mostrar);
+    printf("El número de workers es: %d\n", n_workers);
+    //Ejecutar(P);
+    /*
     int fd[3][2];
     //srand(time(NULL));
     int pid, pid2;
@@ -60,38 +71,20 @@ int main(int argc, char *argv[]){
                 dup2(fd[i][ESCRITURA], STDOUT_FILENO);
                 close(fd[i][LECTURA]);
                 write(STDOUT_FILENO, &i, sizeof(i));
+                close(STDOUT_FILENO);
                 return 0;
             }else{
                 close(fd[i][ESCRITURA]);
                 dup2(fd[i][LECTURA], STDIN_FILENO);
                 execl("./receptor", "./receptor", NULL);
             }
+            return 0;
         }else{
             wait(NULL);
             printf("Soy el padre y mi pid es: %d\n", getpid());
         }
     }
+    while(true)*/ 
     return 0;
 }
-    /*
-    for(int i=0; i < 3; i++){
-        pid = fork();
-        if(pid > 0){
-            int numero = rand() % 3;
-            printf("El número es: %d\n", i);
-            dup2(pipe[i][ESCRITURA], STDOUT_FILENO);
-            close(pipe[i][LECTURA]);
-            write(STDOUT_FILENO, &i, sizeof(i));
-        }
-        else{
-            printf("En el hijo, el i es: %d\n", i);
-            int turno;
-            close(pipe[i][ESCRITURA]);
-            //dup2(pipe[i][LECTURA], STDOUT_FILENO);
-            read(pipe[i][LECTURA], &turno, sizeof(turno));
-            printf("Mi turno es: %d y mi Pid: %d\n", turno, getpid());
-            return 0;
-        }
-    }
-    */
     
