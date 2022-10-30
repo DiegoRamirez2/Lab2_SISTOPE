@@ -30,6 +30,7 @@ typedef struct anio{
     float nMacOs; // Número de juegos para MacOs
     float nLinux; // Número de juegos para Linux
     int nGames; // Número de juegos
+    int nNotFree; // Número de juegos no gratis
     FG *freeGames; // Lista de juegos gratis
 }Anio;
 

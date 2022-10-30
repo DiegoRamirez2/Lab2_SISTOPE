@@ -5,7 +5,7 @@ lab1: lab1.c
 	gcc -o lab1 lab1.c Padre.c Hijo.c
 
 clean:
-	rm -f lab1 *.o *.txt main test_fworker
+	rm -f lab1 *.o *.txt main test_fworker test_fbroker
 
 main: main.c
 	gcc -o main main.c Padre.c Hijo.c

@@ -3,16 +3,19 @@
 #define ESCRITURA 1
 
 int main(){
-    Anio *N = crearAnio("10,Counter-Strike,0,0.0,False,2000,False,Yes,No,No", strlen("10,Counter-Strike,0,5.5,False,2000,False,Yes,Yes,Yes"));
+    char uno[] = "10,Counter-Strike,0,0.0,False,2004,False,Yes,No,No";
+    char dos[] = "20,Team Fortress Classic,0,3.0,False,2004,False,Yes,Yes,Yes";
+    char tres[] = "30,Day of Defeat,0,72.0,False,2004,False,Yes,Yes,Yes";
+    Anio *N = crearAnio(uno, strlen(uno)); 
     LA *la = crearLA2(N);
-    agregarAnio(la, "10,Holaaaaa,0,0.0,False,2004,False,Yes,Yes,No", strlen("10,Holaaaaa,0,20.0,False,2000,False,Yes,Yes,No"));
-    agregarAnio(la, "10,XDDDD,0,4.257,False,2003,False,Yes,Yes,No", strlen("10,Holaaaaa,0,20.0,False,2000,False,Yes,Yes,No"));
+    agregarAnio(la, dos, strlen(dos));
+    agregarAnio(la, tres, strlen(tres));
     char datos[1000];
     ImprimirLista(la);
     strcpy(datos, convertirAstring(la));
     printf("%s", datos);
     printf("\n");
-    LA *la2 = convertirAlista(datos);
+    //LA *la2 = convertirAlista(datos);
     //ImprimirLista(la2);
     //compararAnio(N, "10,Holaaaaa,0,4.0,False,2000,False,Yes,Yes,No", strlen("10,Holaaaaa,0,20.0,False,2000,False,Yes,Yes,No"));
     //compararAnio(N, "10,XDDDDD,0,0.0,False,2000,False,Yes,Yes,Yes", strlen("10,Holaaaaa,0,20.0,False,2000,False,Yes,Yes,No"));

@@ -8,7 +8,6 @@
 Anio *crearAnio(char linea[], int largo){
     Anio *A = (Anio *)malloc(sizeof(Anio));
     A->anio = obtenerAnio(linea, largo);
-    A->nGames = 1;
     A->cheapGame = "NONE";
     A->expensiveGame = "NONE";
     if(precioJuego(linea, largo) != 0.0){
@@ -18,6 +17,8 @@ Anio *crearAnio(char linea[], int largo){
         A->expensivePrice = precioJuego(linea, largo);
         A->priceAcum = precioJuego(linea, largo);
         A->freeGames = crearFG();
+        A->nGames = 1;
+        A->nNotFree = 1;
     }
     else{
         A->cheapGame = "NONE";
@@ -26,6 +27,8 @@ Anio *crearAnio(char linea[], int largo){
         A->expensivePrice = 0.0;
         A->priceAcum = 0.0;
         A->freeGames = crearFG2(nombreJuego(linea, largo));
+        A->nNotFree = 0;
+        A->nGames = 1;
     }
     if(Windows(linea, largo)){
         A->nWindows = 1.0;
@@ -196,14 +199,18 @@ void agregarJuegoGratis(Anio *A, char *nombreJuego){
 
 */
 void compararAnio(Anio *A, char linea[], int largo){
-    if(A->cheapPrice > precioJuego(linea, largo) && precioJuego(linea, largo) != 0.0){
-        A->cheapPrice = precioJuego(linea, largo);
-        A->cheapGame = nombreJuego(linea, largo);
+    if(precioJuego(linea, largo) != 0.0){
+        if(A->cheapPrice > precioJuego(linea, largo)){
+            A->cheapPrice = precioJuego(linea, largo);
+            A->cheapGame = nombreJuego(linea, largo);
+        }
+        if(A->expensivePrice < precioJuego(linea, largo)){
+            A->expensivePrice = precioJuego(linea, largo);
+            A->expensiveGame = nombreJuego(linea, largo);
+        }
+        A->nNotFree++;
     }
-    if(A->expensivePrice < precioJuego(linea, largo) && precioJuego(linea, largo) != 0.0){
-        A->expensivePrice = precioJuego(linea, largo);
-        A->expensiveGame = nombreJuego(linea, largo);
-    }
+    A->nGames++;
     if(Windows(linea, largo)){
         A->nWindows++;
     }
@@ -213,7 +220,6 @@ void compararAnio(Anio *A, char linea[], int largo){
     if(Linux(linea, largo)){
         A->nLinux++;
     }
-    A->nGames++;
     A->priceAcum += precioJuego(linea, largo);
     if(precioJuego(linea, largo) == 0.0){
         agregarJuegoGratis(A, nombreJuego(linea, largo));
@@ -294,8 +300,9 @@ void ImprimirLista(LA *L){
             printf("El juego más barato es: %s\n", aux->anio->cheapGame);
             printf("El precio más barato es: %.1f\n", aux->anio->cheapPrice);
             printf("El precio más caro es: %.1f\n", aux->anio->expensivePrice);
-            printf("El promedio de precios es: %.1f\n", aux->anio->priceAcum / aux->anio->nGames);
+            printf("El promedio de precios es: %.1f\n", aux->anio->priceAcum / aux->anio->nNotFree);
             printf("La cantidad de juegos es: %d\n", aux->anio->nGames);
+            printf("La cantidad de juegos no gratis es: %d\n", aux->anio->nNotFree);
             printf("La cantidad de juegos en Windows es: %.1f%%\n", (aux->anio->nWindows / aux->anio->nGames) * 100);
             printf("La cantidad de juegos en MacOs es: %.1f%%\n", (aux->anio->nMacOs / aux->anio->nGames) * 100);
             printf("La cantidad de juegos en Linux es: %.1f%%\n", (aux->anio->nLinux / aux->anio->nGames) * 100);
@@ -330,7 +337,7 @@ void ImprimirGratis(Anio *A){
 */
 char *convertirAstring(LA *L){
     char *cadena = (char*)malloc(sizeof(char) * 1000);
-    char expensiveP[6], cheapP[6], year[6], nGames[6],
+    char expensiveP[6], cheapP[6], year[6], nGames[6], nNotFree[6],
     priceAcum[6], Windows[6], MacOs[6], Linux[6];
     if(L == NULL){
         return NULL;
@@ -340,13 +347,15 @@ char *convertirAstring(LA *L){
         while(aux != NULL){
             sprintf(year, "%d", aux->anio->anio);
             sprintf(nGames, "%d", aux->anio->nGames);
+            sprintf(nNotFree, "%d", aux->anio->nNotFree);
             strcat(cadena, year);strcat(cadena, ",");
             strcat(cadena, aux->anio->expensiveGame);strcat(cadena, ",");
             strcat(cadena, aux->anio->cheapGame);strcat(cadena, ",");
-            strcat(cadena, gcvt(aux->anio->cheapPrice, 6, expensiveP));strcat(cadena, ",");
-            strcat(cadena, gcvt(aux->anio->expensivePrice, 6, cheapP));strcat(cadena, ",");
+            strcat(cadena, gcvt(aux->anio->expensivePrice, 6, expensiveP));strcat(cadena, ",");
+            strcat(cadena, gcvt(aux->anio->cheapPrice, 6, cheapP));strcat(cadena, ",");
             strcat(cadena, gcvt(aux->anio->priceAcum, 6, priceAcum));strcat(cadena, ",");
             strcat(cadena, nGames);strcat(cadena, ",");
+            strcat(cadena, nNotFree);strcat(cadena, ",");
             strcat(cadena, gcvt(aux->anio->nWindows, 6, Windows));strcat(cadena, ",");
             strcat(cadena, gcvt(aux->anio->nMacOs, 6, MacOs));strcat(cadena, ",");
             strcat(cadena, gcvt(aux->anio->nLinux, 6, Linux));strcat(cadena, ",");
