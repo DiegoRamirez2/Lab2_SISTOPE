@@ -46,7 +46,7 @@ typedef struct listaAnios{
 Anio *crearAnio(char linea[], int largo); // Función que crea un año
 FG *crearFG(); // Función que crea una lista de juegos gratis vacía
 FG *crearFG2(char *nameGame); // Función que crea una lista de juegos gratis con un juego
-void agregarFG(FG *freeGames, char *nameGame); // Función que agrega un juego a la lista de juegos gratis
+void agregarJuegoGratis(Anio *A, char *nombreJuego); // Función que agrega un juego a la lista de juegos gratis
 int posicion(char linea[], int largo, int comas); // Función que cuenta las comas de una linea
 bool Linux(char linea[], int largo); // Función que verifica si un juego es para Linux
 bool Windows(char linea[], int largo); // Función que verifica si un juego es para Windows

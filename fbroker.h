@@ -20,6 +20,7 @@ typedef struct year{
     float nMacOs;
     float nLinux;
     int nGames;
+    int nNotFree;
     FreeG *freeGames;
 }Year;
 
@@ -34,5 +35,12 @@ typedef struct broker{
 
 // Funciones
 Year *crearYear(char *String); // Función que crea un año
-FreeG *createFreeG(); // Función que crea una lista de juegos gratis vacía
+ListY *crearListY(); // Función que crea una lista de años vacía
+ListY *crearListY2(char *String); // Función que crea una lista de años vacía
+FreeG *crearFreeG(); // Función que crea una lista de juegos gratis vacía
+FreeG *crearFreeG2(char *name); // Función que crea una lista de juegos gratis con un juego
 void agregarFreeGame(char *nameGame); // Función que agrega un juego a la lista de juegos gratis
+void agregarFreeG(Year *Y, char *nameGame); // Función que agrega un juego a la lista de juegos gratis
+void agregarYear(ListY *listYear, Year *Y); // Función que agrega un año a la lista de años
+void compararYear(Year *Y1, Year *Y2); // Función que compara un año con la lista de años
+void ImprimirYear(Year *Y); // Función que imprime un año

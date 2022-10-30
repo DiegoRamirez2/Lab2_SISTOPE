@@ -2,108 +2,182 @@
 
 
 
-
+/*
+    *  Función que crea un año a partir de un mensaje con formato
+    *  Entrada: String con el mensaje con formato
+    *  Salida: Puntero a la estructura Year
+*/
 Year *crearYear(char *String){
     Year *N = (Year*)malloc(sizeof(Year));
+    N->freeGames = crearFreeG();
     //printf("El string ingresado es: %s\n", String);
     char *token = strtok(String, ",");
-    printf("El token es: %s\n", token);
     N->year = atoi(token);
     token = strtok(NULL, ",");
-    printf("El token es: %s\n", token);
     N->nameExpensive = token;
     token = strtok(NULL, ",");
-    printf("El token es: %s\n", token);
     N->nameCheap = token;
     token = strtok(NULL, ",");
-    printf("El token es: %s\n", token);
     N->priceExpensive = atof(token);
     token = strtok(NULL, ",");
-    printf("El token es: %s\n", token);
     N->priceCheap = atof(token);
     token = strtok(NULL, ",");
-    printf("El token es: %s\n", token);
     N->priceAcum = atof(token);
-    token = strtok(NULL, ",");
-    printf("El token es: %s\n", token);
+    token = strtok(NULL, ","); 
     N->nGames = atoi(token);
-    token = strtok(NULL, ",");
-    printf("El token es: %s\n", token);
+    token = strtok(NULL, ","); 
+    N->nNotFree = atoi(token);
+    token = strtok(NULL, ",");  
     N->nWindows = atof(token);
-    token = strtok(NULL, ",");
-    printf("El token es: %s\n", token);
+    token = strtok(NULL, ",");   
     N->nMacOs = atof(token);
-    token = strtok(NULL, ",");
-    printf("El token es: %s\n", token);
+    token = strtok(NULL, ",");   
     N->nLinux = atof(token);
     token = strtok(NULL, ",");
-    printf("El token es: %s\n", token);
     while(token != NULL){
-            printf("El token 3 es: %s\n", token);
-            //A->freeGames = crearFG(token3, strlen(token3));
-            token = strtok(NULL, ",");
-        }
+        agregarFreeG(N, token);
+        token = strtok(NULL, ",");
+    }
     return N;
 }
 /*
-    * Esta función convierte un string a una lista de años, funcionará
-    * como "desencriptador" para recibir mensajes entre procesos.
-    * Entrada: String con los datos de la lista de años.
-    * Retorno: Lista de años.
+    * Esta funcion crea una lista de juegos gratis
+    * Entrada: void
+    * Salida: Puntero a la estructura FreeG
 */
+FreeG *crearFreeG(){
+    FreeG *F = (FreeG*)malloc(sizeof(FreeG));
+    F->name = (char *)calloc(256, sizeof(char));
+    F->next = NULL;
+    return F;
+}
 /*
-ListY *convertirAlista(char *string){
-    ListY *Y = crearListY();
-    char *token = strtok(string, "¿");
-    // /*
-    int i = 0;
-    while(token != NULL){
-        agregarAnio()
-        //L = crearLA2(A);
-        token = strtok(NULL, "¿");
-    // 
+    * Esta función crea una lista de juegos gratis con un juego
+    * Entrada: Un puntero a un arreglo de caracteres que representa el nombre del juego
+    * Retorno: Un puntero a una estructura freeGames
+*/
+FreeG *crearFreeG2(char *name){
+    FreeG *F = (FreeG *)malloc(sizeof(FreeG));
+    F->name = (char *)calloc(256, sizeof(char));
+    strcpy(F->name, name);
+    F->next = NULL;
+    return F;
+}
+/*
+    * Esta función añade un juego gratis a un año especifico
+    * Entrada: Año al que se le quiere añadir el juego, nombre del juego
+    * Retorno: void
+*/
+void agregarFreeG(Year *Y, char *nombreJ){
+    if(Y->freeGames->next == NULL && Y->freeGames->name[0] == '\0'){
+        Y->freeGames->name = nombreJ;
     }
-    printf("I es: %d\n", i);
+    else{
+        FreeG *aux = Y->freeGames;
+        while(aux->next != NULL){
+            aux = aux->next;
+        }
+        aux->next = crearFreeG2(nombreJ);
+    }
+}
+/*
+    * Esta función crea una lista de años
+    * Entrada: void
+    * Retorno: Un puntero a una estructura Year
+*/
+ListY *crearListY(){
+    ListY *L = (ListY*)malloc(sizeof(ListY));
+    L->next = NULL;
     return L;
 }
-
-char *AnioAstring(char *string){
-        char *token2 = strtok(string, ",");
-        printf("El token 2 es: %s\n", token2);
-        //Anio *A = (Anio*)malloc(sizeof(Anio));
-        token2 = strtok(NULL, ",");
-        printf("El token 2 es: %s\n", token2);
-        //strcpy(A->expensiveGame, token2);
-        token2 = strtok(NULL, ",");
-        printf("El token 2 es: %s\n", token2);
-        //strcpy(A->cheapGame, token2);
-        token2 = strtok(NULL, ",");
-        printf("El token 2 es: %s\n", token2);  
-        //A->cheapPrice = atof(token2);
-        token2 = strtok(NULL, ",");
-        printf("El token 2 es: %s\n", token2);
-        //A->expensivePrice = atof(token2);
-        token2 = strtok(NULL, ",");
-        printf("El token 2 es: %s\n", token2);
-        //A->priceAcum = atof(token2);
-        token2 = strtok(NULL, ",");
-        printf("El token 2 es: %s\n", token2);
-        //A->nGames = atoi(token2);
-        token2 = strtok(NULL, ",");
-        printf("El token 2 es: %s\n", token2);
-        //A->nWindows = atof(token2);
-        token2 = strtok(NULL, ",");
-        printf("El token 2 es: %s\n", token2);
-        //A->nMacOs = atof(token2);
-        token2 = strtok(NULL, ",");
-        printf("El token 2 es: %s\n", token2);
-        //A->nLinux = atof(token2);
-        token2= strtok(NULL, ",");
-        i++;
-        while(token2 != NULL){
-            printf("El token 3 es: %s\n", token2);
-            //A->freeGames = crearFG(token3, strlen(token3));
-            token2 = strtok(NULL, ",");
-        }
-}
+/*
+    * Esta función crea una lista de años con un año
+    * Entrada: Un puntero a una estructura Year
+    * Retorno: Un puntero a una estructura ListY
 */
+ListY *crearListY2(char *String){
+    ListY *L = crearListY();
+    char *token = strtok(String, "¿");
+    while(token != NULL){
+        printf("%s\n", token);
+        ImprimirYear(crearYear(token));
+        //agregarYear(L, crearYear(token));
+        token = strtok(NULL, "¿");
+    }
+    return L;
+}
+/*
+    * Esta función añade un año a una lista de años
+    * Entrada: Lista de años, año a añadir
+    * Retorno: void
+*/
+void agregarYear(ListY *L, Year *Y){
+    bool existe = false;
+    if(L->year == NULL){
+        L->year = Y;
+    }else{
+        ListY *aux = L->next;
+        while(aux->next != NULL){
+            if(aux->year->year == Y->year){
+                existe = true;
+                compararYear(aux->year, Y);
+            }
+            aux = aux->next;
+        }
+        if(aux->year->year == Y->year){
+            existe = true;
+            compararYear(aux->year, Y);
+        }
+        if(!existe){
+            aux->next = crearListY();
+            aux->next->year = Y;
+        }
+    }
+}
+/*
+    * Esta función compara dos años y actualiza los datos del año que ya existe
+    * Entrada: Año que ya existe, año que se quiere comparar
+    * Retorno: void
+*/
+void compararYear(Year *Y1, Year *Y2){
+    if(Y1->priceExpensive < Y2->priceExpensive){
+        Y1->priceExpensive = Y2->priceExpensive;
+        Y1->nameExpensive = Y2->nameExpensive;
+    }
+    if(Y1->priceCheap > Y2->priceCheap){
+        Y1->priceCheap = Y2->priceCheap;
+        Y1->nameCheap = Y2->nameCheap;
+    }
+    Y1->priceAcum += Y2->priceAcum;
+    Y1->nGames += Y2->nGames;
+    Y1->nNotFree += Y2->nNotFree;
+    Y1->nWindows += Y2->nWindows;
+    Y1->nMacOs += Y2->nMacOs;
+    Y1->nLinux += Y2->nLinux;
+    FreeG *aux = Y2->freeGames;
+    while(aux->next != NULL){
+        agregarFreeG(Y1, aux->name);
+        aux = aux->next;
+    }
+    agregarFreeG(Y1, aux->name);
+}
+/*
+*/
+void ImprimirYear(Year *Y){
+    printf("El año es: %d\n", Y->year);
+    printf("El juego más caro es: %s\n", Y->nameExpensive);
+    printf("El precio del juego más caro es: %f\n", Y->priceExpensive);
+    printf("El juego más barato es: %s\n", Y->nameCheap);
+    printf("El precio del juego más barato es: %f\n", Y->priceCheap);
+    printf("El precio acumulado es: %f\n", Y->priceAcum);
+    printf("La cantidad de juegos es: %d\n", Y->nGames);
+    printf("Los juegos de Windows son: %f\n", Y->nWindows);
+    printf("Los juegos de MacOs son: %f\n", Y->nMacOs);
+    printf("Los juegos de Linux son: %f\n", Y->nLinux);
+    /*
+    while(Y->freeGames != NULL){
+        printf("El juego gratis es: %s\n", Y->freeGames->name);
+        Y->freeGames = Y->freeGames->next;
+    }
+    */
+}

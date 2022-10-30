@@ -223,7 +223,7 @@ void compararAnio(Anio *A, char linea[], int largo){
     A->priceAcum += precioJuego(linea, largo);
     if(precioJuego(linea, largo) == 0.0){
         agregarJuegoGratis(A, nombreJuego(linea, largo));
-        }
+    }
 }
 /*
     * Esta función crea una lista vacía de datos de años.

@@ -3,9 +3,9 @@
 #define ESCRITURA 1
 
 int main(){
-    char uno[] = "10,Counter-Strike,0,0.0,False,2004,False,Yes,No,No";
-    char dos[] = "20,Team Fortress Classic,0,3.0,False,2004,False,Yes,Yes,Yes";
-    char tres[] = "30,Day of Defeat,0,72.0,False,2004,False,Yes,Yes,Yes";
+    char uno[] = "10,Counter-Strike,0,4.0,False,2004,False,Yes,No,No";
+    char dos[] = "20,Team Fortress Classic,0,0.0,False,2005,False,Yes,Yes,Yes";
+    char tres[] = "30,Day of Defeat,0,72.0,False,2006,False,Yes,Yes,Yes";
     Anio *N = crearAnio(uno, strlen(uno)); 
     LA *la = crearLA2(N);
     agregarAnio(la, dos, strlen(dos));
