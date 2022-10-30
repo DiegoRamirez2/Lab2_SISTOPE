@@ -19,3 +19,6 @@ Exec: Exec.c
 test_fworker: test_fworker.c
 	gcc -o test_fworker test_fworker.c fworker.c
 
+test_fbroker: test_fbroker.c
+	gcc -o test_fbroker test_fbroker.c fbroker.c
+

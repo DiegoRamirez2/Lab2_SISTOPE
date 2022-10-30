@@ -59,3 +59,4 @@ LA *crearLA2(Anio *A); // Función que crea una lista de años con un año
 void agregarAnio(LA *listaAnios, char linea[], int largo); // Función que agrega un año a la lista de años
 void ImprimirLista(LA *listaAnios); // Función que imprime la lista de años
 void ImprimirGratis(Anio *A); // Función que imprime la lista de juegos gratis
+char *convertirAstring(LA *L); // Función que convierte la lista de años a un string

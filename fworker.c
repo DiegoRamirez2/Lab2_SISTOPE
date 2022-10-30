@@ -9,8 +9,8 @@ Anio *crearAnio(char linea[], int largo){
     Anio *A = (Anio *)malloc(sizeof(Anio));
     A->anio = obtenerAnio(linea, largo);
     A->nGames = 1;
-    A->cheapGame = "No hay juegos más baratos, solo gratis";
-    A->expensiveGame = "No hay juegos más caros, solo gratis";
+    A->cheapGame = "NONE";
+    A->expensiveGame = "NONE";
     if(precioJuego(linea, largo) != 0.0){
         A->cheapGame =  nombreJuego(linea, largo);
         A->expensiveGame = nombreJuego(linea, largo);
@@ -20,8 +20,8 @@ Anio *crearAnio(char linea[], int largo){
         A->freeGames = crearFG();
     }
     else{
-        A->cheapGame = "No hay juegos más baratos, solo gratis";
-        A->expensiveGame = "No hay juegos más caros, solo gratis";
+        A->cheapGame = "NONE";
+        A->expensiveGame = "NONE";
         A->cheapPrice = 1000.0;
         A->expensivePrice = 0.0;
         A->priceAcum = 0.0;
@@ -156,7 +156,7 @@ float precioJuego(char linea[], int largo){
 /*
     * Esta función obtiene los años de cada juego del archivo de entrada
     * Entrada: Recibe la linea a evaluar, y el largo de la línea
-    * Salida: Retorna el año del juego
+    * Retorno: Retorna el año del juego
 */
 int obtenerAnio(char linea[], int largo){
     int comas = 0;
@@ -171,7 +171,9 @@ int obtenerAnio(char linea[], int largo){
     return atoi(anio);
 }
 /*
-
+    * Esta función añade un juego gratis a un año especifico
+    * Entrada: Año al que se le quiere añadir el juego, nombre del juego
+    * Retorno: void
 */
 void agregarJuegoGratis(Anio *A, char *nombreJuego){
     if(A->freeGames->next == NULL && A->freeGames->nameGame[0] == '\0'){
@@ -186,6 +188,11 @@ void agregarJuegoGratis(Anio *A, char *nombreJuego){
     }
 }
 /*
+    * Esta función compara un Año con otro, para determinar
+    * entre los dos, cuales tienen juegos más caros, más baratos, etc,
+    * y modifica el año ingresado con los nuevos datos.
+    * Entrada: Año a comparar, línea de texto a evaluar con su largo.
+    * Retorno: void
 
 */
 void compararAnio(Anio *A, char linea[], int largo){
@@ -213,6 +220,10 @@ void compararAnio(Anio *A, char linea[], int largo){
         }
 }
 /*
+    * Esta función crea una lista vacía de datos de años.
+    * Entrada: void.
+    * Retorno: Lista vacía de datos de años.
+
 */
 LA *crearLA(){
     LA *nuevoLA = (LA*)malloc(sizeof(LA));
@@ -220,6 +231,9 @@ LA *crearLA(){
     return nuevoLA;
 }
 /*
+    * Esta función crea una lista de años con un año especifico.
+    * Entrada: Año inicial con el cual crear la lista.
+    * Retorno: Lista de años con un año especifico ingresado.
 */
 LA *crearLA2(Anio *A){
     LA *nuevoLA = (LA*)malloc(sizeof(LA));
@@ -228,6 +242,11 @@ LA *crearLA2(Anio *A){
     return nuevoLA;
 }
 /*
+    * Esta funcion agrega un año si este no se encuentra en la lista,
+    * y si ya se encuentra, compara los datos del año con los datos ya
+    * existentes en la lista.
+    * Entrada: Lista de años, año a agregar, linea de texto a evaluar.
+    * Retorno: void.
 */
 void agregarAnio(LA *L, char linea[], int largo){
     bool existe = false;
@@ -258,7 +277,11 @@ void agregarAnio(LA *L, char linea[], int largo){
         }
     }
 }
-
+/*
+    * Esta función imprime los datos de una lista de años.
+    * Entrada: Lista de años.
+    * Retorno: void.
+*/
 void ImprimirLista(LA *L){
     if(L == NULL){
         printf("No hay datos para mostrar");
@@ -269,20 +292,24 @@ void ImprimirLista(LA *L){
             printf("El anio es: %d\n", aux->anio->anio);
             printf("El juego más caro es: %s\n", aux->anio->expensiveGame);
             printf("El juego más barato es: %s\n", aux->anio->cheapGame);
-            printf("El precio más barato es: %f\n", aux->anio->cheapPrice);
-            printf("El precio más caro es: %f\n", aux->anio->expensivePrice);
-            printf("El promedio de precios es: %f\n", aux->anio->priceAcum);
+            printf("El precio más barato es: %.1f\n", aux->anio->cheapPrice);
+            printf("El precio más caro es: %.1f\n", aux->anio->expensivePrice);
+            printf("El promedio de precios es: %.1f\n", aux->anio->priceAcum / aux->anio->nGames);
             printf("La cantidad de juegos es: %d\n", aux->anio->nGames);
-            printf("La cantidad de juegos en Windows es: %f\n", aux->anio->nWindows);
-            printf("La cantidad de juegos en MacOs es: %f\n", aux->anio->nMacOs);
-            printf("La cantidad de juegos en Linux es: %f\n", aux->anio->nLinux);
+            printf("La cantidad de juegos en Windows es: %.1f%%\n", (aux->anio->nWindows / aux->anio->nGames) * 100);
+            printf("La cantidad de juegos en MacOs es: %.1f%%\n", (aux->anio->nMacOs / aux->anio->nGames) * 100);
+            printf("La cantidad de juegos en Linux es: %.1f%%\n", (aux->anio->nLinux / aux->anio->nGames) * 100);
             ImprimirGratis(aux->anio);
             printf("\n");
             aux = aux->next;
         }
     }
 }
-
+/*
+    * Esta función imprime los juegos gratis de un año.
+    * Entrada: Un año.
+    * Retorno: void.
+*/
 void ImprimirGratis(Anio *A){
     if(A->freeGames == NULL || A->freeGames->nameGame[0] == '\0'){
         printf("No hay juegos gratis\n");
@@ -293,5 +320,49 @@ void ImprimirGratis(Anio *A){
             printf("El juego gratis es: %s\n", aux->nameGame);
             aux = aux->next;
         }
+    }
+}
+/*
+    * Esta función convierte una lista de años a un string, funcionará
+    * como "encriptador" para enviar mensajes entre procesos.
+    * Entrada: Lista de años.
+    * Retorno: String con los datos de la lista de años.
+*/
+char *convertirAstring(LA *L){
+    char *cadena = (char*)malloc(sizeof(char) * 1000);
+    char expensiveP[6], cheapP[6], year[6], nGames[6],
+    priceAcum[6], Windows[6], MacOs[6], Linux[6];
+    if(L == NULL){
+        return NULL;
+    }
+    else{
+        LA *aux = L;
+        while(aux != NULL){
+            sprintf(year, "%d", aux->anio->anio);
+            sprintf(nGames, "%d", aux->anio->nGames);
+            strcat(cadena, year);strcat(cadena, ",");
+            strcat(cadena, aux->anio->expensiveGame);strcat(cadena, ",");
+            strcat(cadena, aux->anio->cheapGame);strcat(cadena, ",");
+            strcat(cadena, gcvt(aux->anio->cheapPrice, 6, expensiveP));strcat(cadena, ",");
+            strcat(cadena, gcvt(aux->anio->expensivePrice, 6, cheapP));strcat(cadena, ",");
+            strcat(cadena, gcvt(aux->anio->priceAcum, 6, priceAcum));strcat(cadena, ",");
+            strcat(cadena, nGames);strcat(cadena, ",");
+            strcat(cadena, gcvt(aux->anio->nWindows, 6, Windows));strcat(cadena, ",");
+            strcat(cadena, gcvt(aux->anio->nMacOs, 6, MacOs));strcat(cadena, ",");
+            strcat(cadena, gcvt(aux->anio->nLinux, 6, Linux));strcat(cadena, ",");
+            while(aux->anio->freeGames != NULL){
+                strcat(cadena, aux->anio->freeGames->nameGame);
+                if(aux->anio->freeGames->next != NULL){
+                    strcat(cadena, ",");
+                }
+                aux->anio->freeGames = aux->anio->freeGames->next;
+            }
+            if(aux->next != NULL){
+                strcat(cadena, "¿");
+            }
+            aux = aux->next;
+        }
+        strcat(cadena, "¿");
+        return cadena;
     }
 }
