@@ -98,11 +98,16 @@ ListY *crearListY(){
 ListY *crearListY2(char *String){
     ListY *L = crearListY();
     char *token = strtok(String, "¿");
+    char **array = (char **)calloc(40, sizeof(char *));
+    int i = 0;
     while(token != NULL){
+        array[i] = token;
         printf("%s\n", token);
-        ImprimirYear(crearYear(token));
-        //agregarYear(L, crearYear(token));
         token = strtok(NULL, "¿");
+        i++;
+    }
+    for(int j = 0; j < i; j++){
+        agregarYear(L, crearYear(array[j]));
     }
     return L;
 }
@@ -114,25 +119,58 @@ ListY *crearListY2(char *String){
 void agregarYear(ListY *L, Year *Y){
     bool existe = false;
     if(L->year == NULL){
-        L->year = Y;
+        printf("Entramos a la condicion 1\n");
+        L->year = copiarYear(Y);
+        printf("Falló esta wea\n");
     }else{
         ListY *aux = L->next;
         while(aux->next != NULL){
+            printf("Estamos en el while\n");
             if(aux->year->year == Y->year){
+                printf("Entramos a la condicion 2\n");
                 existe = true;
                 compararYear(aux->year, Y);
             }
             aux = aux->next;
         }
         if(aux->year->year == Y->year){
+            printf("Entramos a la condicion 3\n");
             existe = true;
             compararYear(aux->year, Y);
         }
         if(!existe){
+            printf("Entramos a la condicion 4\n");
             aux->next = crearListY();
             aux->next->year = Y;
         }
     }
+}
+/*
+*/
+Year *copiarYear(Year *Y){
+    Year *N = (Year*)malloc(sizeof(Year));
+    N->freeGames = crearFreeG();
+    N->year = Y->year;
+    N->nameExpensive = Y->nameExpensive;
+    N->nameCheap = Y->nameCheap;
+    N->priceExpensive = Y->priceExpensive;
+    N->priceCheap = Y->priceCheap;
+    N->priceAcum = Y->priceAcum;
+    N->nGames = Y->nGames;
+    N->nNotFree = Y->nNotFree;
+    N->nWindows = Y->nWindows;
+    N->nMacOs = Y->nMacOs;
+    N->nLinux = Y->nLinux;
+    printf("Todavìa no falla\n");
+    FreeG *aux = Y->freeGames;
+    printf("Si no falla hasta aqui, falla en el while\n");
+    while(aux->next != NULL){
+        printf("Entra al while\n");
+        //agregarFreeG(N, aux->name);
+        aux = aux->next;
+    }
+    //agregarFreeG(N, aux->name);
+    return N;
 }
 /*
     * Esta función compara dos años y actualiza los datos del año que ya existe
@@ -171,13 +209,12 @@ void ImprimirYear(Year *Y){
     printf("El precio del juego más barato es: %f\n", Y->priceCheap);
     printf("El precio acumulado es: %f\n", Y->priceAcum);
     printf("La cantidad de juegos es: %d\n", Y->nGames);
+    printf("La cantidad de juegos no gratis es: %d\n", Y->nNotFree);
     printf("Los juegos de Windows son: %f\n", Y->nWindows);
     printf("Los juegos de MacOs son: %f\n", Y->nMacOs);
     printf("Los juegos de Linux son: %f\n", Y->nLinux);
-    /*
     while(Y->freeGames != NULL){
         printf("El juego gratis es: %s\n", Y->freeGames->name);
         Y->freeGames = Y->freeGames->next;
     }
-    */
 }

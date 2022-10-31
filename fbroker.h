@@ -35,6 +35,7 @@ typedef struct broker{
 
 // Funciones
 Year *crearYear(char *String); // Función que crea un año
+Year *copiarYear(Year *Y); // Función que crea un año
 ListY *crearListY(); // Función que crea una lista de años vacía
 ListY *crearListY2(char *String); // Función que crea una lista de años vacía
 FreeG *crearFreeG(); // Función que crea una lista de juegos gratis vacía
