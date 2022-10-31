@@ -1,5 +1,6 @@
 #include "fbroker.h"
-
+#define LECTURA 0
+#define ESCRITURA 1
 
 
 /*
@@ -102,7 +103,6 @@ ListY *crearListY2(char *String){
     int i = 0;
     while(token != NULL){
         array[i] = token;
-        printf("%s\n", token);
         token = strtok(NULL, "¿");
         i++;
     }
@@ -112,34 +112,45 @@ ListY *crearListY2(char *String){
     return L;
 }
 /*
+
+*/
+void agregarListYear(ListY *L, char *String){
+    char *token = strtok(String, "¿");
+    char **array = (char **)calloc(40, sizeof(char *));
+    int i = 0;
+    while(token != NULL){
+        array[i] = token;
+        printf("%s\n", token);
+        token = strtok(NULL, "¿");
+        i++;
+    }
+    for(int j = 0; j < i; j++){
+        agregarYear(L, crearYear(array[j]));
+    }
+}
+/*
     * Esta función añade un año a una lista de años
     * Entrada: Lista de años, año a añadir
     * Retorno: void
 */
 void agregarYear(ListY *L, Year *Y){
     bool existe = false;
-    if(L->year == NULL){
-        printf("Entramos a la condicion 1\n");
+    if(L->year == NULL && L->next == NULL){
         L->year = copiarYear(Y);
-        printf("Falló esta wea\n");
     }else{
-        ListY *aux = L->next;
+        ListY *aux = L;
         while(aux->next != NULL){
-            printf("Estamos en el while\n");
             if(aux->year->year == Y->year){
-                printf("Entramos a la condicion 2\n");
                 existe = true;
                 compararYear(aux->year, Y);
             }
             aux = aux->next;
         }
         if(aux->year->year == Y->year){
-            printf("Entramos a la condicion 3\n");
             existe = true;
             compararYear(aux->year, Y);
         }
         if(!existe){
-            printf("Entramos a la condicion 4\n");
             aux->next = crearListY();
             aux->next->year = Y;
         }
@@ -161,15 +172,12 @@ Year *copiarYear(Year *Y){
     N->nWindows = Y->nWindows;
     N->nMacOs = Y->nMacOs;
     N->nLinux = Y->nLinux;
-    printf("Todavìa no falla\n");
     FreeG *aux = Y->freeGames;
-    printf("Si no falla hasta aqui, falla en el while\n");
     while(aux->next != NULL){
-        printf("Entra al while\n");
-        //agregarFreeG(N, aux->name);
+        agregarFreeG(N, aux->name);
         aux = aux->next;
     }
-    //agregarFreeG(N, aux->name);
+    agregarFreeG(N, aux->name);
     return N;
 }
 /*
@@ -213,8 +221,194 @@ void ImprimirYear(Year *Y){
     printf("Los juegos de Windows son: %f\n", Y->nWindows);
     printf("Los juegos de MacOs son: %f\n", Y->nMacOs);
     printf("Los juegos de Linux son: %f\n", Y->nLinux);
-    while(Y->freeGames != NULL){
-        printf("El juego gratis es: %s\n", Y->freeGames->name);
-        Y->freeGames = Y->freeGames->next;
+    FreeG *aux = Y->freeGames;
+    while(aux != NULL){
+        printf("Los juegos gratis son: \n%s\n", aux->name);
+        aux = aux->next;
+    }
+}
+/*
+    * Esta función obtiene los años de un archivo
+    * Entrada: Recibe un Broker (el cual contiene el archivo a abrir)
+    * Salida: Retorna un arreglo de enteros con los años
+*/
+int* obtenerAnios(Broker *B){
+    FILE *fp;
+    fp = fopen(B->entrada, "r");
+    int *anios = (int*)calloc(100, sizeof(int)), i = 0, anio;
+    char linea[256];
+    while(fgets(linea, 256, fp)){
+        int largo = strlen(linea);
+        int anio = obtenerAnio(linea, largo - 1);
+        float precio_juego = obtenerPrecio(linea, largo);
+        if(buscarAnio(anio, anios) == -1 
+            && anio >= B->anio 
+            && (precio_juego >= B->precio_minimo || precio_juego == 0.0)){
+            anios[i] = anio;
+            i++;
+        }
+        memset(linea, 0, 256);
+    }
+    int *anios_correctos = (int*)malloc(i * sizeof(int));    
+    for(int j=0; j < i; j++){
+        anios_correctos[j] = anios[j];
+    }
+    qsort(anios_correctos, i, sizeof(int), ordenarAnios);
+    fclose(fp);
+    B->n_anios = i;
+    B->anio = anios_correctos[0];
+    //printf("El anio ahora es: %d\n", B->anio);
+    return anios_correctos;
+}
+/*
+    * Esta funcion ordena un array de años
+    * Entrada: Recibe un arreglo de enteros con los años
+    * Salida: Retorna un arreglo de enteros con los años ordenados
+*/
+int ordenarAnios(const void *a, const void *b){
+    return (*(int*)a - *(int*)b);
+}
+/*
+    * Esta función obtiene los años de cada juego del archivo de entrada
+    * Entrada: Recibe la linea a evaluar, y el largo de la línea
+    * Salida: Retorna el año del juego
+*/
+int obtenerAnio(char linea[], int largo){
+    int comas = 0;
+    while(comas != 5){
+        if(linea[largo] == ','){
+            comas++;
+        }
+        largo--;
+    }
+    char anio[4] = {linea[largo + 2], linea[largo + 3],
+    linea[largo + 4], linea[largo + 5]};
+    return atoi(anio);
+}
+/*
+    * Esta función obtiene el precio de un juego de 
+    * una linea de texto (array de caracteres)
+    * Entrada: Recibe la linea a evaluar, y el largo de la línea
+    * Salida: Retorna el precio del juego
+*/
+float obtenerPrecio(char linea[], int largo){
+    int comas = 0, i = 0;
+    while(comas != 7){
+        if(linea[largo] == ','){
+            comas++;
+        }
+        largo--;
+    }
+    int pos = largo + 2;
+    while(linea[pos + i] != ','){
+        i++;
+    }
+    char precio_[i];
+    for(int j=0; j < i; j++){
+        precio_[j] = linea[pos + j];
+    }
+    return atof(precio_);
+}
+/*
+    * Esta función verifica si un año ya fue agregado
+    * Entrada: Recibe el año a evaluar y el arreglo de años
+    * Salida: Retorna la posición del año en el arreglo, si no lo encuentra retorna -1
+*/
+int buscarAnio(int anio_, int *anios){
+    for(int j=0; j < 100; j++){
+        if(anios[j] == anio_){
+            return j;
+        }
+    }
+    return -1;
+}
+/*
+    * Esta función crea un broker que almacenará los datos de entrada
+    * Entrada: Recibe el nombre del archivo de entrada, el nombre del archivo
+    * de salida, el año a evaluar, el precio mínimo a evaluar, el número de workers
+    * y una bandera booleana.
+    * Returno: Retorna un Broker
+
+*/
+Broker* crearBroker(char input_[], char output_[], int year_, float minimun_price_, bool show_, int n_workers_){
+    Broker *B;
+    B = (Broker*)malloc(sizeof(Broker));
+    strncpy(B->entrada, input_, 100);
+    strncpy(B->salida, output_, 100);
+    B->anio = year_;
+    B->precio_minimo = minimun_price_;
+    B->mostrar = show_;
+    B->n_anios = 0;
+    B->n_workers = n_workers_;
+    return B;
+}
+/*
+*/
+void Ejecutar(Broker *B){
+    srand(time(NULL));
+    char mensaje[5000];
+    char receptor[5000];
+    int fd1[B->n_workers][2], fd2[B->n_workers][2];
+    for(int i=0; i < B->n_workers; i++){
+        pipe(fd1[i]);
+        pipe(fd2[i]);
+    }
+    int idChild = 0;
+    int pid;
+    int pipes[B->n_workers];
+    while(idChild < B->n_workers){
+        pid = fork();
+        pipes[idChild] = pid;
+        if(pid == 0){
+            break;
+        }
+        idChild++;
+    }
+    if(pid == 0){
+        close(fd2[idChild][LECTURA]);
+        dup2(fd2[idChild][ESCRITURA], STDOUT_FILENO);
+        close(fd2[idChild][ESCRITURA]);
+        close(fd1[idChild][ESCRITURA]);
+        dup2(fd1[idChild][LECTURA], STDIN_FILENO);
+        close(fd1[idChild][LECTURA]);
+        execl("./worker", "./worker", NULL);
+        perror("Error en el execl");
+        exit(EXIT_FAILURE);
+    }else{
+        for(int i=0; i < B->n_workers; i++){
+            close(fd1[i][LECTURA]);
+        }
+        int random;
+        char linea[500];
+        char mensaje[5000];
+        FILE *fp = fopen(B->entrada, "r");
+        FILE *fp2 = fopen(B->salida, "a");
+        int k = 1;
+        while(fgets(linea, 500, fp) != NULL){
+            random = rand() % (B->n_workers);
+            int largo = strlen(linea);
+            int anio_ = obtenerAnio(linea, largo - 1);
+            float precio_juego = obtenerPrecio(linea, largo);
+            if(anio_ >= B->anio && (precio_juego >= B->precio_minimo || precio_juego  == 0.0)){
+                strcpy(mensaje, linea);
+                printf("La línea %d es: %s", k, mensaje);
+                write(fd1[random][ESCRITURA], mensaje, strlen(mensaje));
+            }
+            k++;
+        }
+        fclose(fp);
+        for(int i=0; i < B->n_workers; i++){
+            write(fd1[i][ESCRITURA], "FIN", 4);
+        }
+        //while(true);
+        ListY *L = crearListY();
+        char recibido[5000];
+        char recibido_aux[5000];
+        for(int i=0; i < B->n_workers; i++){
+            read(fd2[i][LECTURA], recibido, 5000);
+            strcpy(recibido_aux, recibido);
+            agregarYear(L, crearYear(recibido_aux));
+        }
+        fclose(fp2);
     }
 }

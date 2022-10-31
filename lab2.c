@@ -3,6 +3,8 @@
 #include <stdlib.h>
 #include <sys/wait.h>
 #include <time.h>
+#include <stdbool.h>
+#include <getopt.h>
 #define LECTURA 0
 #define ESCRITURA 1
 
@@ -10,7 +12,7 @@
 // con los nuevos descriptores de archivo del standard de C, osea que se puede repartir información
 // entre los procesos hijos y padres, sin necesidad de cerrar los descriptores de archivo,
 // solo hacer uso de dup2 para repartir poco a poco
-// ./Exec -i datos_juegos_3000.csv -o salida.txt -d 2000 -p 0.56 -n 5 -b
+// ./lab2 -i datos_juegos_3000.csv -o salida.txt -d 2000 -p 0.56 -n 5 -b
 int main(int argc, char *argv[]){
     int pid;
     int opt;
@@ -27,13 +29,17 @@ int main(int argc, char *argv[]){
                 d = true;
                 break;
             case 'p':
-                p = true;
+                if(atof(optarg) >= 0.0){
+                    p = true;
+                }
                 break;
             case 'b':
                 b = true;
                 break;
             case 'n':
-                n = true;
+                if(atoi(optarg) > 0){
+                    n = true;
+                }
                 break;
             case '?':
                 printf("unknown option: %c", optopt);
@@ -45,25 +51,21 @@ int main(int argc, char *argv[]){
     }
     if(i && o && d && p && n){
         if(b){
-            char *args[] = {argv[0], argv[1], argv[2], argv[3], argv[4], 
-            argv[5], argv[6], argv[7], argv[8], argv[9], argv[10], argv[11], NULL};
-            pid = fork();
-            if(pid == 0){
-                execvp("./main", args);
-            }else{
-                wait(NULL);
-            }
+            argv[11] = "1";
         }
         else{
-            char *args[] = {argv[0], argv[1], argv[2], argv[3], argv[4], 
-            argv[5], argv[6], argv[7], argv[8], argv[9], argv[10], NULL};
+            argv[11] = "0";
+        }
+        char *args[] = {argv[2], argv[4], argv[6], argv[8], argv[10], argv[11], NULL};
             pid = fork();
             if(pid == 0){
-                execvp("./main", args);
+                execvp("./broker", args);
             }else{
                 wait(NULL);
             }
-        }
+    }
+    else{
+        printf("Faltan argumentos válidos");
     }
     return 0;
 }
